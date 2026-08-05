@@ -39,7 +39,7 @@ selected_regions = st.sidebar.multiselect(
 
 categories = df["Category"].unique().tolist()
 selected_categories = st.sidebar.multiselect(
-    "Selecciona la categoria: ", categories, default=categories
+    "Selecciona la categoría: ", categories, default=categories
 )
 
 #filtro segmento
@@ -57,16 +57,16 @@ filtered_df =df[
 ]
 
 #cuerpo principal del dashboard
-st.title("Dashboard Analitio de supermercado")
+st.title("Dashboard Analítico de Supermercado")
 st.markdown(
-    "Este tablero interactivo analizael rendimiento de ventas, distribucion por "
-    " categorias y comportamiento geografico ."
+    "Este tablero interactivo analiza el rendimiento de ventas, distribución por "
+    "categorías y comportamiento geográfico."
 )
 st.markdown("----")
 
 if filtered_df.empty:
     st.warning(
-        "No hay datos que coinciden con los filtros seleccionados. Por favor, amplia tu seleccion"
+        "No hay datos que coincidan con los filtros seleccionados. Por favor, amplía tu selección."
     )
 else:
     #tarjetas KPi
@@ -87,7 +87,7 @@ else:
         st.metric(label = "Ticket promedio", value = f"${avg_order_value:,.2f}")   #.2f es para que se vean los decimales
 
     with col4:
-        st.metric(label = "Clientes unicos", value = f"{total_customers:,}")    
+        st.metric(label = "Clientes únicos", value = f"{total_customers:,}")    
 
 
     st.markdown("---")
@@ -113,7 +113,7 @@ else:
             markers=True,
             labels={
                 "Order Date": "Fecha del Periodo",
-                "Sales": "Ventas Totales (S)",
+                "Sales": "Ventas Totales ($)",
             },
             template="plotly_white",
         )
@@ -138,7 +138,7 @@ else:
 
     col_chart3, col_chart4 = st.columns(2)
     with col_chart3:
-        st.subheader("Ventaspor subcsategoria")
+        st.subheader("Ventas por Subcategoría")
         subcat_sales = (
             filtered_df.groupby("Sub-Category")["Sales"]
             .sum()
@@ -152,14 +152,14 @@ else:
             orientation="h",
             labels={
                 "Sales": "Ventas Totales ($)",
-                "Sub-Category": "Subcategoria",
+                "Sub-Category": "Subcategoría",
             },
             template="plotly_white",
         )
         st.plotly_chart(fig_subcat, use_container_width=True)
 
     with col_chart4:
-        st.subheader("Los 10 productos mas vendidos")
+        st.subheader("Los 10 productos más vendidos")
         top_products = (
             filtered_df.groupby("Product Name")["Sales"]
             .sum()
