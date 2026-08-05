@@ -1,6 +1,7 @@
 import pandas as pd
 import plotly.express as px
 import streamlit as st
+import os
 
 
 #configuracion de la pagina
@@ -10,15 +11,20 @@ st.set_page_config(
     layout="wide",
     page_icon="🛒"
 )
+
+# Obtener la ruta absoluta de la carpeta donde está este script (app.py)
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+CSV_PATH = os.path.join(CURRENT_DIR, "supermarket.csv")
+
 #cargar y  preparar datos
 @st.cache_data
 def load_data():
-    df = pd.read_csv('supermarket.csv')
+    df = pd.read_csv(CSV_PATH)
     #convertir fecha para tener el formato correcto
     df["Order Date"] = pd.to_datetime(df["Order Date"], dayfirst=True)
     return df
 
-
+df = load_data()
 #barra lateral de filtros
 
 st.sidebar.header("Filtros")
@@ -91,7 +97,7 @@ else:
     col_chart1, col_chart2 = st.columns(2)
 
     with col_chart1:
-        st.subheader("Tendencia de ventasmensiales")
+        st.subheader("Tendencia de ventas mensuales")
         #agrupamos por ventas por mes
 
         monthly_sales = (
@@ -109,4 +115,70 @@ else:
                 "Order Date": "Fecha del Periodo",
                 "Sales": "Ventas Totales (S)",
             },
-                    )
+            template="plotly_white",
+        )
+        fig_time.update_traces(line=dict(color="#1F77B4", width=3))
+        st.plotly_chart(fig_time, use_container_width=True)
+
+    with col_chart2:
+        st.subheader("Ventas por Región")
+        region_sales = (
+            filtered_df.groupby("Region")["Sales"].sum().reset_index()
+        )
+        fig_region = px.pie(
+            region_sales,
+            names="Region",
+            values="Sales",
+            hole=0.4,
+            template="plotly_white",
+        )
+        st.plotly_chart(fig_region, use_container_width=True)
+
+    #graficos fila 2
+
+    col_chart3, col_chart4 = st.columns(2)
+    with col_chart3:
+        st.subheader("Ventaspor subcsategoria")
+        subcat_sales = (
+            filtered_df.groupby("Sub-Category")["Sales"]
+            .sum()
+            .reset_index()
+            .sort_values(by="Sales", ascending=True)
+        )
+        fig_subcat = px.bar(
+            subcat_sales,
+            x="Sales",
+            y="Sub-Category",
+            orientation="h",
+            labels={
+                "Sales": "Ventas Totales ($)",
+                "Sub-Category": "Subcategoria",
+            },
+            template="plotly_white",
+        )
+        st.plotly_chart(fig_subcat, use_container_width=True)
+
+    with col_chart4:
+        st.subheader("Los 10 productos mas vendidos")
+        top_products = (
+            filtered_df.groupby("Product Name")["Sales"]
+            .sum()
+            .reset_index()
+            .sort_values(by="Sales", ascending=False)
+            .head(10)
+            .sort_values(by="Sales", ascending=True)
+        )
+        fig_prod = px.bar(
+            top_products,
+            x="Sales",
+            y="Product Name",
+            orientation="h",
+            labels={"Sales": "Ventas Totales ($)", "Product Name": "Producto"},
+            template="plotly_white",
+        )
+        st.plotly_chart(fig_prod, use_container_width=True)
+
+    #Tabla de datos detallados
+
+    with st.expander(" Ver datos detallados filtrados"):
+        st.dataframe(filtered_df, use_container_width=True)
