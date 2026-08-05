@@ -85,3 +85,28 @@ else:
 
 
     st.markdown("---")
+
+    #graficos fila 1
+
+    col_chart1, col_chart2 = st.columns(2)
+
+    with col_chart1:
+        st.subheader("Tendencia de ventasmensiales")
+        #agrupamos por ventas por mes
+
+        monthly_sales = (
+            filtered_df.set_index("Order Date")
+            .resample("M")["Sales"]
+            .sum()
+            .reset_index()
+        )
+        fig_time = px.line(
+            monthly_sales,
+            x="Order Date",
+            y="Sales",
+            markers=True,
+            labels={
+                "Order Date": "Fecha del Periodo",
+                "Sales": "Ventas Totales (S)",
+            },
+                    )
