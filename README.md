@@ -44,6 +44,8 @@ supermarket-dashboard/
 ├── requirements.txt    # Dependencias del proyecto (Streamlit, Pandas, Plotly)
 └── README.md           # Documentación del proyecto
 
+```
+
 Ejecución Local (Instalación)
 Si deseas clonar y ejecutar este proyecto en tu entorno local, sigue estos pasos:
 
