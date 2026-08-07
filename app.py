@@ -102,7 +102,7 @@ else:
 
         monthly_sales = (
             filtered_df.set_index("Order Date")
-            .resample("M")["Sales"]
+            .resample("ME")["Sales"]
             .sum()
             .reset_index()
         )
